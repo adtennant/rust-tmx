@@ -1,6 +1,6 @@
 [package]
 name = "tmx"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["adtennant <alex@adtennant.co.uk>"]
 edition = "2018"
 description = "TMX is a library for loading [Tiled](https://mapeditor.org) maps in Rust"

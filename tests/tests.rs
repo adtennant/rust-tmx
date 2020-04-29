@@ -1,4 +1,4 @@
-use tmx::Map;
+use tmx::{Map, Tileset};
 
 #[test]
 fn test_orthogonal() {
@@ -19,7 +19,7 @@ fn test_orthogonal() {
     </map>
     "##;
 
-    let tmx: Map = tmx::from_reader(map.as_bytes()).unwrap();
+    let tmx = Map::from_reader(map.as_bytes()).unwrap();
     println!("test_orthogonal: {:?}", tmx);
 }
 
@@ -42,7 +42,7 @@ fn test_isometric() {
     </map>    
     "##;
 
-    let tmx: Map = tmx::from_reader(map.as_bytes()).unwrap();
+    let tmx = Map::from_reader(map.as_bytes()).unwrap();
     println!("test_isometric: {:?}", tmx);
 }
 
@@ -65,7 +65,7 @@ fn test_isometric_staggered() {
     </map>        
     "##;
 
-    let tmx: Map = tmx::from_reader(map.as_bytes()).unwrap();
+    let tmx = Map::from_reader(map.as_bytes()).unwrap();
     println!("test_isometric_staggered: {:?}", tmx);
 }
 
@@ -88,7 +88,7 @@ fn test_hexagonal() {
     </map>    
     "##;
 
-    let tmx: Map = tmx::from_reader(map.as_bytes()).unwrap();
+    let tmx = Map::from_reader(map.as_bytes()).unwrap();
     println!("test_hexagonal: {:?}", tmx);
 }
 
@@ -123,7 +123,7 @@ fn test_xml_data() {
     </map>
     "##;
 
-    let tmx: Map = tmx::from_reader(map.as_bytes()).unwrap();
+    let tmx = Map::from_reader(map.as_bytes()).unwrap();
     println!("test_xml_data: {:?}", tmx);
 }
 
@@ -146,7 +146,7 @@ fn test_csv_data() {
     </map>    
     "##;
 
-    let tmx: Map = tmx::from_reader(map.as_bytes()).unwrap();
+    let tmx = Map::from_reader(map.as_bytes()).unwrap();
     println!("test_csv_data: {:?}", tmx);
 }
 
@@ -167,7 +167,7 @@ fn test_base64_data() {
     </map>
     "##;
 
-    let tmx: Map = tmx::from_reader(map.as_bytes()).unwrap();
+    let tmx = Map::from_reader(map.as_bytes()).unwrap();
     println!("test_base64_data: {:?}", tmx);
 }
 
@@ -188,7 +188,7 @@ fn test_gzip_data() {
     </map>    
     "##;
 
-    let tmx: Map = tmx::from_reader(map.as_bytes()).unwrap();
+    let tmx = Map::from_reader(map.as_bytes()).unwrap();
     println!("test_gzip_data: {:?}", tmx);
 }
 
@@ -209,7 +209,7 @@ fn test_zlib_data() {
     </map>    
     "##;
 
-    let tmx: Map = tmx::from_reader(map.as_bytes()).unwrap();
+    let tmx = Map::from_reader(map.as_bytes()).unwrap();
     println!("test_zlib_data: {:?}", tmx);
 }
 
@@ -230,7 +230,7 @@ fn test_zstd_data() {
     </map>
     "##;
 
-    let tmx: Map = tmx::from_reader(map.as_bytes()).unwrap();
+    let tmx = Map::from_reader(map.as_bytes()).unwrap();
     println!("test_zstd_data: {:?}", tmx);
 }
 
@@ -267,7 +267,7 @@ fn test_chunk_xml_data() {
     </map>
     "##;
 
-    let tmx: Map = tmx::from_reader(map.as_bytes()).unwrap();
+    let tmx = Map::from_reader(map.as_bytes()).unwrap();
     println!("test_chunk_xml_data: {:?}", tmx);
 }
 
@@ -292,7 +292,7 @@ fn test_chunk_csv_data() {
     </map>
     "##;
 
-    let tmx: Map = tmx::from_reader(map.as_bytes()).unwrap();
+    let tmx = Map::from_reader(map.as_bytes()).unwrap();
     println!("test_chunk_csv_data: {:?}", tmx);
 }
 
@@ -315,7 +315,7 @@ fn test_chunk_base64_data() {
     </map>    
     "##;
 
-    let tmx: Map = tmx::from_reader(map.as_bytes()).unwrap();
+    let tmx = Map::from_reader(map.as_bytes()).unwrap();
     println!("test_chunk_base64_data: {:?}", tmx);
 }
 
@@ -338,7 +338,7 @@ fn test_chunk_gzip_data() {
     </map>     
     "##;
 
-    let tmx: Map = tmx::from_reader(map.as_bytes()).unwrap();
+    let tmx = Map::from_reader(map.as_bytes()).unwrap();
     println!("test_chunk_gzip_data: {:?}", tmx);
 }
 
@@ -361,7 +361,7 @@ fn test_chunk_zlib_data() {
     </map>    
     "##;
 
-    let tmx: Map = tmx::from_reader(map.as_bytes()).unwrap();
+    let tmx = Map::from_reader(map.as_bytes()).unwrap();
     println!("test_chunk_zlib_data: {:?}", tmx);
 }
 
@@ -384,7 +384,7 @@ fn test_chunk_zstd_data() {
     </map>    
     "##;
 
-    let tmx: Map = tmx::from_reader(map.as_bytes()).unwrap();
+    let tmx = Map::from_reader(map.as_bytes()).unwrap();
     println!("test_chunk_zstd_data: {:?}", tmx);
 }
 
@@ -419,9 +419,9 @@ fn test_gid() {
     </map>
     "##;
 
-    let tmx: Map = tmx::from_reader(map.as_bytes()).unwrap();
+    let tmx = Map::from_reader(map.as_bytes()).unwrap();
 
-    if let tmx::layer::Values::Tiles(tiles) = &tmx.layers[0].data.values {
+    if let tmx::layer::DataKind::Tiles(tiles) = &tmx.layers[0].data.kind {
         for tile in tiles.iter() {
             println!(
                 "{} {} {} {}",
@@ -432,4 +432,34 @@ fn test_gid() {
             );
         }
     }
+}
+
+#[cfg(feature = "zstd-data")]
+#[test]
+fn test_tileset() {
+    let map = r##"
+    <?xml version="1.0" encoding="UTF-8" ?>
+    <tileset version="1.2" tiledversion="1.3.3" name="tiles16" tilewidth="16" tileheight="16" tilecount="256" columns="16">
+        <image source="tiles16.png" width="256" height="256" />
+        <tile id="0" type="Solid" />
+        <tile id="1" type="Solid" />
+        <tile id="2" type="Solid" />
+        <tile id="3" type="OneWay" />
+        <tile id="4" type="OneWay" />
+        <tile id="5" type="OneWay" />
+        <tile id="16" type="Solid" />
+        <tile id="17" type="Solid" />
+        <tile id="18" type="Solid" />
+        <tile id="19" type="OneWay" />
+        <tile id="32" type="Solid" />
+        <tile id="33" type="Solid" />
+        <tile id="34" type="Solid" />
+        <tile id="35" type="Solid" />
+        <tile id="36" type="Solid" />
+        <tile id="37" type="Solid" />
+    </tileset>   
+    "##;
+
+    let tileset = Tileset::from_reader(map.as_bytes()).unwrap();
+    println!("test_tileset: {:?}", tileset);
 }

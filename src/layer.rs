@@ -3,6 +3,7 @@ use serde_aux::field_attributes::deserialize_number_from_string;
 use std::{error, str::FromStr};
 use thiserror::Error;
 
+/// The encoding used to encode the tile layer data. When used, it can be “base64” and “csv” at the moment.
 #[derive(Clone, Copy, Debug, Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub enum Encoding {
@@ -11,6 +12,7 @@ pub enum Encoding {
     CSV,
 }
 
+/// The compression used to compress the tile layer data. Tiled supports “gzip” and “zlib”.
 #[derive(Clone, Copy, Debug, Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub enum Compression {
@@ -43,18 +45,22 @@ pub struct Tile {
 }
 
 impl Tile {
+    /// The global tile ID (default: 0).
     pub fn gid(&self) -> u32 {
         self.gid & !(FLIPPED_HORIZONTALLY_FLAG | FLIPPED_VERTICALLY_FLAG | FLIPPED_DIAGONALLY_FLAG)
     }
 
+    /// Whether the tile is horizontally flipped.
     pub fn flipped_horizontally(&self) -> bool {
         self.gid & FLIPPED_HORIZONTALLY_FLAG > 0
     }
 
+    /// Whether the tile is vertically flipped.
     pub fn flipped_vertically(&self) -> bool {
         self.gid & FLIPPED_VERTICALLY_FLAG > 0
     }
 
+    /// Whether the tile is flipped (anti) diagonally, enabling tile rotation.
     pub fn flipped_diagonally(&self) -> bool {
         self.gid & FLIPPED_DIAGONALLY_FLAG > 0
     }
@@ -62,12 +68,16 @@ impl Tile {
 
 #[derive(Debug, Deserialize)]
 pub struct Chunk {
+    /// The x coordinate of the chunk in tiles.
     #[serde(deserialize_with = "deserialize_number_from_string")]
     pub x: usize,
+    /// The y coordinate of the chunk in tiles.
     #[serde(deserialize_with = "deserialize_number_from_string")]
     pub y: usize,
+    /// The width of the chunk in tiles.
     #[serde(deserialize_with = "deserialize_number_from_string")]
     pub width: usize,
+    /// The height of the chunk in tiles.
     #[serde(deserialize_with = "deserialize_number_from_string")]
     pub height: usize,
     #[serde(rename = "tile")]
@@ -75,7 +85,7 @@ pub struct Chunk {
 }
 
 #[derive(Debug)]
-pub enum Values {
+pub enum DataKind {
     Tiles(Vec<Tile>),
     Chunks(Vec<Chunk>),
 }
@@ -83,7 +93,7 @@ pub enum Values {
 #[derive(Debug)]
 pub struct Data {
     pub encoding: Option<Encoding>,
-    pub values: Values,
+    pub kind: DataKind,
 }
 
 fn parse_csv(value: &String) -> Result<Vec<Tile>, Box<dyn error::Error>> {
@@ -247,9 +257,9 @@ impl<'de> Deserialize<'de> for Data {
             })
             .map_err(de::Error::custom)?;
 
-        let values = match (encoding, chunks, tiles, other.get("$value")) {
+        let kind = match (encoding, chunks, tiles, other.get("$value")) {
             // XML tiles
-            (None, None, Some(tiles), None) => Ok(Values::Tiles(tiles)),
+            (None, None, Some(tiles), None) => Ok(DataKind::Tiles(tiles)),
 
             // XML chunks
             (None, Some(chunks), None, None) => chunks
@@ -265,11 +275,11 @@ impl<'de> Deserialize<'de> for Data {
                     None => Err(String::from("invalid chunk data")),
                 })
                 .collect::<Result<Vec<_>, _>>()
-                .map(|chunks| Values::Chunks(chunks)),
+                .map(DataKind::Chunks),
 
             // Encoded tiles
             (Some(encoding), None, None, Some(value)) => decode_tile_data(value, encoding)
-                .map(Values::Tiles)
+                .map(DataKind::Tiles)
                 .map_err(|e| e.to_string()),
 
             // Encoded chunks
@@ -294,14 +304,18 @@ impl<'de> Deserialize<'de> for Data {
                         })
                 })
                 .collect::<Result<Vec<_>, _>>()
-                .map(Values::Chunks),
+                .map(DataKind::Chunks),
 
             _ => Err(String::from("invalid tile data")),
         }
         .map_err(de::Error::custom)?;
 
-        Ok(Data { encoding, values })
+        Ok(Data { encoding, kind })
     }
+}
+
+fn default_visible() -> bool {
+    true
 }
 
 fn default_opacity() -> f64 {
@@ -310,21 +324,32 @@ fn default_opacity() -> f64 {
 
 #[derive(Debug, Deserialize)]
 pub struct Layer {
+    /// Unique ID of the layer. Each layer that added to a map gets a unique id. Even if a layer is deleted, no layer ever gets the same ID. Can not be changed in Tiled. (since Tiled 1.2)
     pub id: usize,
+    /// The name of the layer.
     #[serde(default)]
     pub name: String,
+    /// The x coordinate of the layer in tiles. Defaults to 0 and can not be changed in Tiled.
     #[serde(default)]
     pub x: i32,
+    /// The y coordinate of the layer in tiles. Defaults to 0 and can not be changed in Tiled.
     #[serde(default)]
     pub y: i32,
+    /// The width of the layer in tiles. Always the same as the map width for fixed-size maps.
     pub width: i32,
+    /// The height of the layer in tiles. Always the same as the map height for fixed-size maps.
     pub height: i32,
+    #[serde(default = "default_visible")]
+    pub visible: bool,
     #[serde(default)]
     pub locked: bool,
+    /// The opacity of the layer as a value from 0 to 1. Defaults to 1.
     #[serde(default = "default_opacity")]
     pub opacity: f64,
+    /// Rendering offset for this layer in pixels. Defaults to 0. (since 0.14)
     #[serde(default, rename = "offsetx")]
     pub offset_x: f64,
+    ///  Rendering offset for this layer in pixels. Defaults to 0. (since 0.14)
     #[serde(default, rename = "offsety")]
     pub offset_y: f64,
     pub data: Data,

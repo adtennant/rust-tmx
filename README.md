@@ -13,7 +13,9 @@ TMX is a library for loading [Tiled](https://mapeditor.org) maps in Rust.
 cargo add tmx
 ```
 
-## Example
+## Examples
+
+### Loading a Map
 
 ```rust
 use tmx::Map;
@@ -36,8 +38,32 @@ fn main() -> Result<(), Box<dyn Error>> {
     </map>
     "##;
 
-    let map: Map = tmx::from_str(map)?;
+    let map = Map::from_str(map)?;
     println!("{:?}", map);
+
+    Ok(())
+}
+```
+
+### Loading a Tileset
+
+```rust
+use tmx::Tileset;
+
+fn main() -> Result<(), Box<dyn Error>> {
+    let tileset = r##"
+    <?xml version="1.0" encoding="UTF-8" ?>
+<tileset version="1.2" tiledversion="1.3.3" name="tiles16" tilewidth="16" tileheight="16" tilecount="256" columns="16">
+    <image source="tiles16.png" width="256" height="256" />
+    <tile id="0" type="Solid" />
+    <tile id="1" type="Solid" />
+    <tile id="2" type="Solid" />
+    <tile id="3" type="OneWay" />
+</tileset>
+    "##;
+
+    let tileset = Tileset::from_str(tileset)?;
+    println!("{:?}", tileset);
 
     Ok(())
 }
