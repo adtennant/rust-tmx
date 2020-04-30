@@ -62,7 +62,7 @@ pub struct Tileset {
     pub tile_count: usize,
     /// The number of tile columns in the tileset. For image collection tilesets it is editable and is used when displaying the tileset. (since 0.15)
     #[serde(deserialize_with = "deserialize_number_from_string")]
-    pub columns: usize,
+    pub columns: u32,
     #[serde(rename = "backgroundcolor")]
     pub background_color: Option<String>,
     // tileoffset

@@ -70,16 +70,16 @@ impl Tile {
 pub struct Chunk {
     /// The x coordinate of the chunk in tiles.
     #[serde(deserialize_with = "deserialize_number_from_string")]
-    pub x: usize,
+    pub x: u32,
     /// The y coordinate of the chunk in tiles.
     #[serde(deserialize_with = "deserialize_number_from_string")]
-    pub y: usize,
+    pub y: u32,
     /// The width of the chunk in tiles.
     #[serde(deserialize_with = "deserialize_number_from_string")]
-    pub width: usize,
+    pub width: u32,
     /// The height of the chunk in tiles.
     #[serde(deserialize_with = "deserialize_number_from_string")]
-    pub height: usize,
+    pub height: u32,
     #[serde(rename = "tile")]
     pub tiles: Vec<Tile>,
 }
@@ -215,13 +215,13 @@ impl<'de> Deserialize<'de> for Data {
         #[derive(Debug, Deserialize)]
         struct RawChunk {
             #[serde(deserialize_with = "deserialize_number_from_string")]
-            x: usize,
+            x: u32,
             #[serde(deserialize_with = "deserialize_number_from_string")]
-            y: usize,
+            y: u32,
             #[serde(deserialize_with = "deserialize_number_from_string")]
-            width: usize,
+            width: u32,
             #[serde(deserialize_with = "deserialize_number_from_string")]
-            height: usize,
+            height: u32,
             #[serde(rename = "tile")]
             tiles: Option<Vec<Tile>>,
             #[serde(flatten)]
@@ -325,7 +325,7 @@ fn default_opacity() -> f64 {
 #[derive(Debug, Deserialize)]
 pub struct Layer {
     /// Unique ID of the layer. Each layer that added to a map gets a unique id. Even if a layer is deleted, no layer ever gets the same ID. Can not be changed in Tiled. (since Tiled 1.2)
-    pub id: usize,
+    pub id: u32,
     /// The name of the layer.
     #[serde(default)]
     pub name: String,

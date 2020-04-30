@@ -92,7 +92,7 @@ pub struct Map {
     pub render_order: RenderOrder,
     /// The compression level to use for tile layer data (defaults to -1, which means to use the algorithm default).
     #[serde(rename = "compressionlevel")]
-    pub compression_level: Option<usize>,
+    pub compression_level: Option<u32>,
     /// The map width in tiles.
     pub width: i32,
     /// The map height in tiles.
