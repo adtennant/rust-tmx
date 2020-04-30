@@ -65,9 +65,9 @@ pub struct Tileset {
         deserialize_with = "deserialize_number_from_string",
         rename = "firstgid"
     )]
-    first_gid: u32,
+    pub first_gid: u32,
     #[serde(flatten)]
-    kind: TilesetKind,
+    pub kind: TilesetKind,
 }
 
 #[derive(Debug, Deserialize)]
