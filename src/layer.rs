@@ -4,7 +4,7 @@ use std::{error, str::FromStr};
 use thiserror::Error;
 
 /// The encoding used to encode the tile layer data. When used, it can be “base64” and “csv” at the moment.
-#[derive(Clone, Copy, Debug, Deserialize)]
+#[derive(Clone, Copy, Debug, Deserialize, Eq, Hash, PartialEq)]
 #[serde(rename_all = "lowercase")]
 pub enum Encoding {
     #[cfg(feature = "base64-data")]
@@ -13,7 +13,7 @@ pub enum Encoding {
 }
 
 /// The compression used to compress the tile layer data. Tiled supports “gzip” and “zlib”.
-#[derive(Clone, Copy, Debug, Deserialize)]
+#[derive(Clone, Copy, Debug, Deserialize, Eq, Hash, PartialEq)]
 #[serde(rename_all = "lowercase")]
 pub enum Compression {
     GZip,
@@ -38,7 +38,7 @@ const FLIPPED_HORIZONTALLY_FLAG: u32 = 0x80000000;
 const FLIPPED_VERTICALLY_FLAG: u32 = 0x40000000;
 const FLIPPED_DIAGONALLY_FLAG: u32 = 0x20000000;
 
-#[derive(Debug, Deserialize)]
+#[derive(Clone, Copy, Debug, Deserialize, Eq, Hash, PartialEq)]
 pub struct Tile {
     #[serde(deserialize_with = "deserialize_number_from_string")]
     gid: u32,
@@ -66,7 +66,7 @@ impl Tile {
     }
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq)]
 pub struct Chunk {
     /// The x coordinate of the chunk in tiles.
     #[serde(deserialize_with = "deserialize_number_from_string")]
@@ -84,13 +84,13 @@ pub struct Chunk {
     pub tiles: Vec<Tile>,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq)]
 pub enum DataKind {
     Tiles(Vec<Tile>),
     Chunks(Vec<Chunk>),
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug, Eq, Hash, PartialEq)]
 pub struct Data {
     pub encoding: Option<Encoding>,
     pub kind: DataKind,
@@ -322,7 +322,7 @@ fn default_opacity() -> f64 {
     1.0
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq)]
 pub struct Layer {
     /// Unique ID of the layer. Each layer that added to a map gets a unique id. Even if a layer is deleted, no layer ever gets the same ID. Can not be changed in Tiled. (since Tiled 1.2)
     pub id: u32,

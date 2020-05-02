@@ -1,6 +1,6 @@
 use serde::Deserialize;
 
-#[derive(Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq)]
 pub struct Metadata {
     /// The TMX format version. Was “1.0” so far, and will be incremented to match minor Tiled releases.
     pub version: String,

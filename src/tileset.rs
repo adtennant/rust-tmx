@@ -7,7 +7,7 @@ use serde::Deserialize;
 use serde_aux::field_attributes::deserialize_number_from_string;
 use std::io::Read;
 
-#[derive(Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq)]
 pub struct Image {
     /// The reference to the tileset image file (Tiled supports most common image formats).
     pub source: String,
@@ -22,7 +22,7 @@ pub struct Image {
     pub height: u32,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq)]
 pub struct Tile {
     /// The local tile ID within its tileset.
     pub id: u32,
@@ -30,7 +30,7 @@ pub struct Tile {
     pub r#type: String,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq)]
 pub struct Tileset {
     #[serde(flatten)]
     pub metadata: Option<Metadata>,

@@ -2,10 +2,10 @@ use crate::{error::TMXError, layer::Layer, metadata::Metadata, tileset};
 
 use serde::Deserialize;
 use serde_aux::field_attributes::deserialize_number_from_string;
-use std::io::Read;
+use std::{fmt, io::Read};
 
 /// For staggered and hexagonal maps, determines which axis (“x” or “y”) is staggered.
-#[derive(Clone, Copy, Debug, Deserialize)]
+#[derive(Clone, Copy, Debug, Deserialize, Eq, Hash, PartialEq)]
 #[serde(rename_all = "lowercase")]
 pub enum StaggerAxis {
     X,
@@ -13,7 +13,7 @@ pub enum StaggerAxis {
 }
 
 /// For staggered and hexagonal maps, determines whether the “even” or “odd” indexes along the staggered axis are shifted.
-#[derive(Clone, Copy, Debug, Deserialize)]
+#[derive(Clone, Copy, Debug, Deserialize, Eq, Hash, PartialEq)]
 #[serde(rename_all = "lowercase")]
 pub enum StaggerIndex {
     Odd,
@@ -21,7 +21,7 @@ pub enum StaggerIndex {
 }
 
 /// Map orientation. Tiled supports “orthogonal”, “isometric”, “staggered” and “hexagonal”.
-#[derive(Debug, Deserialize)]
+#[derive(Clone, Copy, Debug, Deserialize, Eq, Hash, PartialEq)]
 #[serde(rename_all = "lowercase", tag = "orientation")]
 pub enum Orientation {
     Orthogonal,
@@ -49,7 +49,7 @@ pub enum Orientation {
 }
 
 /// The order in which tiles on tile layers are rendered. Valid values are right-down (the default), right-up, left-down and left-up. In all cases, the map is drawn row-by-row. (only supported for orthogonal maps at the moment)
-#[derive(Clone, Copy, Debug, Deserialize)]
+#[derive(Clone, Copy, Debug, Deserialize, Eq, Hash, PartialEq)]
 #[serde(rename_all = "kebab-case")]
 pub enum RenderOrder {
     RightDown,
@@ -58,7 +58,7 @@ pub enum RenderOrder {
     LeftUp,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq)]
 pub struct Tileset {
     /// The first global tile ID of this tileset (this global ID maps to the first tile in this tileset).
     #[serde(
@@ -70,7 +70,7 @@ pub struct Tileset {
     pub kind: TilesetKind,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq)]
 #[serde(untagged)]
 pub enum TilesetKind {
     Embedded(tileset::Tileset),
@@ -80,7 +80,7 @@ pub enum TilesetKind {
     },
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq)]
 pub struct Map {
     #[serde(flatten)]
     pub metadata: Metadata,
