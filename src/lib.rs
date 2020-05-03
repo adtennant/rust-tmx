@@ -1,8 +1,10 @@
 #![allow(unknown_lints)]
 #![warn(clippy::all)]
 
-mod error;
+#[cfg(feature = "xml")]
+mod to_json;
 
+pub mod error;
 pub mod layer;
 pub mod map;
 pub mod metadata;

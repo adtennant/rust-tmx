@@ -5,7 +5,7 @@
 [![Docs](https://docs.rs/tmx/badge.svg)](https://docs.rs/tmx)
 [![License](https://img.shields.io/crates/l/tmx.svg)](https://github.com/adtennant/rust-tmx/blob/master/LICENSE)
 
-TMX is a library for loading [Tiled](https://mapeditor.org) maps in Rust.
+TMX is a library for loading [Tiled](https://mapeditor.org) (XML and JSON) maps in Rust.
 
 ## Usage
 
@@ -38,7 +38,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     </map>
     "##;
 
-    let map = Map::from_str(map)?;
+    let map = Map::from_xml(map)?;
     println!("{:?}", map);
 
     Ok(())
@@ -62,7 +62,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 </tileset>
     "##;
 
-    let tileset = Tileset::from_str(tileset)?;
+    let tileset = Tileset::from_xml(tileset)?;
     println!("{:?}", tileset);
 
     Ok(())
@@ -111,6 +111,7 @@ The following features are available and enabled by default.
 
 | Feature       | Description                                                                         |
 | ------------- | ----------------------------------------------------------------------------------- |
+| `xml`         | Allows loading XML maps.                                                            |
 | `base64-data` | Allows loading maps where the Tile Layer Format is `Base64 (uncompressed)`.         |
 | `gzip-data`   | Allows loading maps where the Tile Layer Format is `Base64 (gzip compressed)`.      |
 | `zlib-data`   | Allows loading maps where the Tile Layer Format is `Base64 (zlib compressed)`.      |

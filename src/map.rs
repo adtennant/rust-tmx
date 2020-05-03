@@ -1,8 +1,8 @@
-use crate::{error::TMXError, layer::Layer, metadata::Metadata, tileset};
+use crate::{error::Error, layer, metadata, tileset};
 
 use serde::Deserialize;
+use serde_aux::field_attributes::deserialize_bool_from_anything;
 use serde_aux::field_attributes::deserialize_number_from_string;
-use std::{fmt, io::Read};
 
 /// For staggered and hexagonal maps, determines which axis (“x” or “y”) is staggered.
 #[derive(Clone, Copy, Debug, Deserialize, Eq, Hash, PartialEq)]
@@ -49,6 +49,7 @@ pub enum Orientation {
 }
 
 /// The order in which tiles on tile layers are rendered. Valid values are right-down (the default), right-up, left-down and left-up. In all cases, the map is drawn row-by-row. (only supported for orthogonal maps at the moment)
+
 #[derive(Clone, Copy, Debug, Deserialize, Eq, Hash, PartialEq)]
 #[serde(rename_all = "kebab-case")]
 pub enum RenderOrder {
@@ -80,55 +81,79 @@ pub enum TilesetKind {
     },
 }
 
+fn default_compression_level() -> i32 {
+    -1
+}
+
 #[derive(Clone, Debug, Deserialize, PartialEq)]
 pub struct Map {
     #[serde(flatten)]
-    pub metadata: Metadata,
+    pub metadata: metadata::Metadata,
     /// Map orientation. Tiled supports “orthogonal”, “isometric”, “staggered” and “hexagonal”
     #[serde(flatten)]
     pub orientation: Orientation,
     /// The order in which tiles on tile layers are rendered. Valid values are right-down (the default), right-up, left-down and left-up. In all cases, the map is drawn row-by-row. (only supported for orthogonal maps at the moment)
-    #[serde(rename = "renderorder")]
+    #[serde(rename = "renderorder", alias = "$renderorder")]
     pub render_order: RenderOrder,
     /// The compression level to use for tile layer data (defaults to -1, which means to use the algorithm default).
-    #[serde(rename = "compressionlevel")]
-    pub compression_level: Option<u32>,
+    #[serde(rename = "compressionlevel", default = "default_compression_level")]
+    pub compression_level: i32,
     /// The map width in tiles.
+    #[serde(deserialize_with = "deserialize_number_from_string")]
     pub width: i32,
     /// The map height in tiles.
+    #[serde(deserialize_with = "deserialize_number_from_string")]
     pub height: i32,
     /// The width of a tile.
-    #[serde(rename = "tilewidth")]
+    #[serde(
+        rename = "tilewidth",
+        deserialize_with = "deserialize_number_from_string"
+    )]
     pub tile_width: i32,
     /// The height of a tile.
-    #[serde(rename = "tileheight")]
+    #[serde(
+        rename = "tileheight",
+        deserialize_with = "deserialize_number_from_string"
+    )]
     pub tile_height: i32,
+    #[serde(default, deserialize_with = "deserialize_bool_from_anything")]
     pub infinite: bool,
     /// The background color of the map. (optional, may include alpha value since 0.15 in the form #AARRGGBB)
-    #[serde(rename = "backgroundcolor")]
+    #[serde(rename = "backgroundcolor", alias = "$backgroundcolor")]
     pub background_color: Option<String>,
     /// Stores the next available ID for new layers. This number is stored to prevent reuse of the same ID after layers have been removed. (since 1.2)
-    #[serde(rename = "nextlayerid")]
+    #[serde(
+        rename = "nextlayerid",
+        deserialize_with = "deserialize_number_from_string"
+    )]
     pub next_layer_id: u32,
     /// Stores the next available ID for new objects. This number is stored to prevent reuse of the same ID after objects have been removed. (since 0.11)
-    #[serde(rename = "nextobjectid")]
+    #[serde(
+        rename = "nextobjectid",
+        deserialize_with = "deserialize_number_from_string"
+    )]
     pub next_object_id: u32,
-    #[serde(rename = "tileset")]
+    #[serde(alias = "layer")]
+    pub layers: Vec<layer::Layer>,
+    #[serde(alias = "tileset")]
     pub tilesets: Vec<Tileset>,
-    #[serde(rename = "layer")]
-    pub layers: Vec<Layer>,
 }
 
 impl Map {
-    pub fn from_reader<R: Read>(reader: R) -> Result<Self, TMXError> {
-        let map = serde_xml_rs::from_reader(reader)?;
-
-        Ok(map)
+    pub fn from_json(s: &str) -> Result<Map, Error> {
+        serde_json::from_str(s).map_err(From::from)
     }
 
-    pub fn from_str(s: &str) -> Result<Self, TMXError> {
-        let map = serde_xml_rs::from_str(s)?;
+    #[cfg(feature = "xml")]
+    pub fn from_xml(s: &str) -> Result<Map, Error> {
+        #[derive(Deserialize)]
+        struct Doc {
+            map: Vec<Map>,
+        }
 
-        Ok(map)
+        let json = super::to_json::to_json(s).map_err(Error::Conversion)?;
+        let mut doc: Doc = serde_json::from_value(json).map_err(Error::Deserialization)?;
+
+        Ok(doc.map.remove(0))
     }
 }

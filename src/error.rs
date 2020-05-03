@@ -1,7 +1,9 @@
-use thiserror::Error;
+use crate::to_json;
 
-#[derive(Debug, Error)]
-pub enum TMXError {
+#[derive(Debug, thiserror::Error)]
+pub enum Error {
     #[error("error deserializing")]
-    XMLError(#[from] serde_xml_rs::Error),
+    Deserialization(#[from] serde_json::Error),
+    #[error("error converting to JSON")]
+    Conversion(#[from] to_json::Error),
 }
