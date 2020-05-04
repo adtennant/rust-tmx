@@ -3,9 +3,9 @@ use serde_aux::field_attributes::deserialize_number_from_string;
 
 fn parse_csv(value: String) -> Result<Vec<Tile>, String> {
     Ok(value
-        .split("\n")
+        .split('\n')
         .filter(|s| s.trim() != "")
-        .flat_map(|s| s.split(","))
+        .flat_map(|s| s.split(','))
         .filter(|s| s.trim() != "")
         .map(|gid| gid.trim().parse())
         .collect::<Result<Vec<u32>, _>>()
@@ -63,7 +63,7 @@ fn parse_base64_data(data: Vec<u8>) -> Result<Vec<Tile>, String> {
         .collect::<Result<Vec<[u8; 4]>, _>>()
         .map_err(|e| e.to_string())?
         .into_iter()
-        .map(|chunk| u32::from_le_bytes(chunk))
+        .map(u32::from_le_bytes)
         .map(|gid| Tile { gid })
         .collect::<Vec<_>>())
 }
@@ -73,11 +73,11 @@ fn decode_tile_data(
     #[allow(unused_variables)] compression: Option<String>,
     data: String,
 ) -> Result<Vec<Tile>, String> {
-    match encoding.as_ref().map(String::as_str) {
+    match encoding.as_deref() {
         Some("csv") => parse_csv(data),
         #[cfg(feature = "base64-data")]
         Some("base64") => decode_base64(data)
-            .and_then(|data| match compression.as_ref().map(String::as_str) {
+            .and_then(|data| match compression.as_deref() {
                 None => Ok(data),
                 #[cfg(feature = "gzip-data")]
                 Some("gzip") => decode_gzip(data),
@@ -105,22 +105,22 @@ pub struct Tile {
 
 impl Tile {
     /// The global tile ID (default: 0).
-    pub fn gid(&self) -> u32 {
+    pub fn gid(self) -> u32 {
         self.gid & !(FLIPPED_HORIZONTALLY_FLAG | FLIPPED_VERTICALLY_FLAG | FLIPPED_DIAGONALLY_FLAG)
     }
 
     /// Whether the tile is horizontally flipped.
-    pub fn flipped_horizontally(&self) -> bool {
+    pub fn flipped_horizontally(self) -> bool {
         self.gid & FLIPPED_HORIZONTALLY_FLAG > 0
     }
 
     /// Whether the tile is vertically flipped.
-    pub fn flipped_vertically(&self) -> bool {
+    pub fn flipped_vertically(self) -> bool {
         self.gid & FLIPPED_VERTICALLY_FLAG > 0
     }
 
     /// Whether the tile is flipped (anti) diagonally, enabling tile rotation.
-    pub fn flipped_diagonally(&self) -> bool {
+    pub fn flipped_diagonally(self) -> bool {
         self.gid & FLIPPED_DIAGONALLY_FLAG > 0
     }
 }
