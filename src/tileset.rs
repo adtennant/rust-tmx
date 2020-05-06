@@ -136,6 +136,11 @@ impl Tileset {
         serde_json::from_str(s).map_err(From::from)
     }
 
+    pub fn from_json_data(buf: &[u8]) -> Result<Tileset, Error> {
+        let s = std::str::from_utf8(buf).map_err(Error::Utf8Error)?;
+        Tileset::from_json(s)
+    }
+
     #[cfg(feature = "xml")]
     pub fn from_xml(s: &str) -> Result<Tileset, Error> {
         #[derive(Deserialize)]
@@ -147,5 +152,11 @@ impl Tileset {
         let mut doc: Doc = serde_json::from_value(json).map_err(Error::Deserialization)?;
 
         Ok(doc.tileset.remove(0))
+    }
+
+    #[cfg(feature = "xml")]
+    pub fn from_xml_data(buf: &[u8]) -> Result<Tileset, Error> {
+        let s = std::str::from_utf8(buf).map_err(Error::Utf8Error)?;
+        Tileset::from_xml(s)
     }
 }
