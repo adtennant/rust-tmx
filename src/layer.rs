@@ -334,7 +334,7 @@ fn default_opacity() -> f64 {
 #[derive(Clone, Debug, Deserialize, PartialEq)]
 pub struct Layer {
     /// Unique ID of the layer. Each layer that added to a map gets a unique id. Even if a layer is deleted, no layer ever gets the same ID. Can not be changed in Tiled. (since Tiled 1.2)
-    #[serde(deserialize_with = "deserialize_number_from_string")]
+    #[serde(deserialize_with = "deserialize_number_from_string", default)]
     pub id: u32,
     /// The name of the layer.
     #[serde(default)]
