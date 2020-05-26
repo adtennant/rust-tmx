@@ -73,37 +73,37 @@ See the [docs](https://docs.rs/tmx) for more information.
 
 ## TMX Map Format Support
 
-| Element            | Support |
-| ------------------ | ------- |
-| `<map>`            | Full    |
-| `<editorsettings>` | None    |
-| - `<chunksize>`    | None    |
-| - `<export>`       | None    |
-| `<tileset>`        | Partial |
-| - `<tileoffset>`   | None    |
-| - `<grid>`         | None    |
-| - `<image>`        | Full    |
-| - `<terraintypes>` | None    |
-| - - `<terrain>`    | None    |
-| - `<tile>`         | Full    |
-| - - `<animation>`  | Full    |
-| - `<wangsets>`     | None    |
-| - - `<wangset>`    | None    |
-| `<layer>`          | Full    |
-| - `<data>`         | Full    |
-| - `<chunk>`        | Full    |
-| - `<tile>`         | Full    |
-| `<objectgroup>`    | None    |
-| - `<object>`       | None    |
-| - `<ellipse>`      | None    |
-| - `<point>`        | None    |
-| - `<polygon>`      | None    |
-| - `<polyline>`     | None    |
-| - `<text>`         | None    |
-| `<imagelayer>`     | None    |
-| `<group>`          | None    |
-| `<properties>`     | None    |
-| - `<property>`     | None    |
+| Element            | Support    |
+| ------------------ | ---------- |
+| `<map>`            | ✅ Full    |
+| `<editorsettings>` | 🛑 None    |
+| - `<chunksize>`    | 🛑 None    |
+| - `<export>`       | 🛑 None    |
+| `<tileset>`        | ⚠️ Partial |
+| - `<tileoffset>`   | 🛑 None    |
+| - `<grid>`         | 🛑 None    |
+| - `<image>`        | ✅ Full    |
+| - `<terraintypes>` | 🛑 None    |
+| - - `<terrain>`    | 🛑 None    |
+| - `<tile>`         | ✅ Full    |
+| - - `<animation>`  | ✅ Full    |
+| - `<wangsets>`     | 🛑 None    |
+| - - `<wangset>`    | 🛑 None    |
+| `<layer>`          | ✅ Full    |
+| - `<data>`         | ✅ Full    |
+| - `<chunk>`        | ✅ Full    |
+| - `<tile>`         | ✅ Full    |
+| `<objectgroup>`    | 🛑 None    |
+| - `<object>`       | 🛑 None    |
+| - `<ellipse>`      | 🛑 None    |
+| - `<point>`        | 🛑 None    |
+| - `<polygon>`      | 🛑 None    |
+| - `<polyline>`     | 🛑 None    |
+| - `<text>`         | 🛑 None    |
+| `<imagelayer>`     | 🛑 None    |
+| `<group>`          | 🛑 None    |
+| `<properties>`     | 🛑 None    |
+| - `<property>`     | 🛑 None    |
 
 ## Features
 
