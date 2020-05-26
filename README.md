@@ -85,8 +85,8 @@ See the [docs](https://docs.rs/tmx) for more information.
 | - `<image>`        | Full    |
 | - `<terraintypes>` | None    |
 | - - `<terrain>`    | None    |
-| - `<tile>`         | Partial |
-| - - `<animation>`  | None    |
+| - `<tile>`         | Full    |
+| - - `<animation>`  | Full    |
 | - `<wangsets>`     | None    |
 | - - `<wangset>`    | None    |
 | `<layer>`          | Full    |

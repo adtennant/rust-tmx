@@ -37,6 +37,48 @@ fn test_xml() {
 
 #[cfg(feature = "xml")]
 #[test]
+fn test_xml_animation() {
+    let map = r##"
+    <?xml version="1.0" encoding="UTF-8"?>
+    <map version="1.2" tiledversion="1.3.3" orientation="orthogonal" renderorder="right-down" width="4" height="4" tilewidth="16" tileheight="16" infinite="0" nextlayerid="3" nextobjectid="1">
+     <tileset firstgid="1" name="test" tilewidth="16" tileheight="16" tilecount="256" columns="16">
+      <image source="tiles16.png" width="256" height="256"/>
+      <tile id="0" type="Tile">
+       <animation>
+        <frame tileid="0" duration="100"/>
+        <frame tileid="1" duration="100"/>
+       </animation>
+      </tile>
+     </tileset>
+     <layer id="1" name="Tile Layer 1" width="4" height="4">
+      <data>
+       <tile gid="1"/>
+       <tile gid="2684354561"/>
+       <tile gid="1"/>
+       <tile gid="2147483649"/>
+       <tile gid="1610612737"/>
+       <tile gid="3221225473"/>
+       <tile gid="1073741825"/>
+       <tile gid="3221225473"/>
+       <tile gid="2147483649"/>
+       <tile gid="3758096385"/>
+       <tile gid="1073741825"/>
+       <tile gid="536870913"/>
+       <tile gid="536870913"/>
+       <tile gid="1073741825"/>
+       <tile gid="3758096385"/>
+       <tile gid="2147483649"/>
+      </data>
+     </layer>
+    </map>
+    "##;
+
+    let tmx = tmx::Map::from_xml(map).unwrap();
+    println!("xml: {:?}", tmx);
+}
+
+#[cfg(feature = "xml")]
+#[test]
 fn test_xml_csv() {
     let map = r##"
     <?xml version="1.0" encoding="UTF-8"?>
@@ -338,6 +380,70 @@ fn test_json() {
             "tileheight":16,
             "tiles":[
                    {
+                    "id":0,
+                    "type":"Tile"
+                   }],
+            "tilewidth":16
+           }],
+    "tilewidth":16,
+    "type":"map",
+    "version":1.2,
+    "width":4
+   }
+    "##;
+
+    let tmx = tmx::Map::from_json(map).unwrap();
+    println!("json: {:?}", tmx);
+}
+
+#[test]
+fn test_json_animation() {
+    let map = r##"
+    { "compressionlevel":-7,
+    "height":4,
+    "infinite":false,
+    "layers":[
+           {
+            "data":[1, 2684354561, 1, 2147483649, 1610612737, 3221225473, 1073741825, 3221225473, 2147483649, 3758096385, 1073741825, 536870913, 536870913, 1073741825, 3758096385, 2147483649],
+            "height":4,
+            "id":1,
+            "name":"Tile Layer 1",
+            "opacity":1,
+            "type":"tilelayer",
+            "visible":true,
+            "width":4,
+            "x":0,
+            "y":0
+           }],
+    "nextlayerid":3,
+    "nextobjectid":1,
+    "orientation":"orthogonal",
+    "renderorder":"right-down",
+    "tiledversion":"1.3.3",
+    "tileheight":16,
+    "tilesets":[
+           {
+            "columns":16,
+            "firstgid":1,
+            "image":"tiles16.png",
+            "imageheight":256,
+            "imagewidth":256,
+            "margin":0,
+            "name":"test",
+            "spacing":0,
+            "tilecount":256,
+            "tileheight":16,
+            "tiles":[
+                   {
+                    "animation":[
+                        {
+                         "duration":100,
+                         "tileid":0
+                        }, 
+                        {
+                         "duration":100,
+                         "tileid":1
+                        }],
                     "id":0,
                     "type":"Tile"
                    }],
