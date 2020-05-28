@@ -78,21 +78,21 @@ impl<'de> Deserialize<'de> for Image {
     }
 }
 
-fn deserialize_milliseconds<'de, D>(deserializer: D) -> Result<Duration, D::Error>
+fn deserialize_milliseconds_from_string<'de, D>(deserializer: D) -> Result<Duration, D::Error>
 where
     D: Deserializer<'de>,
 {
-    let millis = u64::deserialize(deserializer)?;
+    let millis = deserialize_number_from_string::<u64, D>(deserializer)?;
     Ok(Duration::from_millis(millis))
 }
 
 #[derive(Clone, Copy, Debug, Deserialize, Eq, Hash, PartialEq)]
 pub struct Frame {
     /// The local ID of a tile within the parent <tileset>.
-    #[serde(deserialize_with = "deserialize_number_from_string", rename = "tileid")]
-    pub tile_id: u32,
+    #[serde(deserialize_with = "deserialize_number_from_string")]
+    pub tileid: u32,
     /// How long (in milliseconds) this frame should be displayed before advancing to the next frame.
-    #[serde(deserialize_with = "deserialize_milliseconds")]
+    #[serde(deserialize_with = "deserialize_milliseconds_from_string")]
     pub duration: Duration,
 }
 
