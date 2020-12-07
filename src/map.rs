@@ -124,13 +124,15 @@ pub struct Map {
     /// Stores the next available ID for new layers. This number is stored to prevent reuse of the same ID after layers have been removed. (since 1.2)
     #[serde(
         rename = "nextlayerid",
-        deserialize_with = "deserialize_number_from_string"
+        deserialize_with = "deserialize_number_from_string",
+        default
     )]
     pub next_layer_id: u32,
     /// Stores the next available ID for new objects. This number is stored to prevent reuse of the same ID after objects have been removed. (since 0.11)
     #[serde(
         rename = "nextobjectid",
-        deserialize_with = "deserialize_number_from_string"
+        deserialize_with = "deserialize_number_from_string",
+        default
     )]
     pub next_object_id: u32,
     #[serde(alias = "layer")]
